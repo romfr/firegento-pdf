@@ -95,6 +95,17 @@
             </sales>
         </routers>
     </frontend>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <FireGento_Pdf before="Mage_Adminhtml">FireGento_Pdf_Adminhtml</FireGento_Pdf>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <adminhtml>
         <translate>
             <modules>

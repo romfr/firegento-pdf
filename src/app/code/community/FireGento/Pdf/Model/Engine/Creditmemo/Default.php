@@ -143,7 +143,7 @@ class FireGento_Pdf_Model_Engine_Creditmemo_Default extends FireGento_Pdf_Model_
         );
         $page->drawText(
             Mage::helper('firegento_pdf')->__('Description'),
-            $this->margin['left'] + 120,
+            $this->margin['left'] + 80,
             $this->y,
             $this->encoding
         );
@@ -163,10 +163,10 @@ class FireGento_Pdf_Model_Engine_Creditmemo_Default extends FireGento_Pdf_Model_
             $this->encoding
         );
 
-        $taxLabel = Mage::helper('firegento_pdf')->__('Tax');
+        $taxLabel = Mage::helper('firegento_pdf')->__('Tax item');
         $page->drawText(
             $taxLabel,
-            $this->margin['right'] - 65 - $this->widthForStringUsingFontSize($taxLabel, $font, 9),
+            $this->margin['right'] - 75 - $this->widthForStringUsingFontSize($taxLabel, $font, 9),
             $this->y,
             $this->encoding
         );
@@ -174,7 +174,7 @@ class FireGento_Pdf_Model_Engine_Creditmemo_Default extends FireGento_Pdf_Model_
         $totalLabel = Mage::helper('firegento_pdf')->__('Total');
         $page->drawText(
             $totalLabel,
-            $this->margin['right'] - 10 - $this->widthForStringUsingFontSize($totalLabel, $font, 10),
+            $this->margin['right'] - 5 - $this->widthForStringUsingFontSize($totalLabel, $font, 10),
             $this->y,
             $this->encoding
         );
@@ -205,4 +205,69 @@ class FireGento_Pdf_Model_Engine_Creditmemo_Default extends FireGento_Pdf_Model_
         );
     }
 
+    /**
+     * @param Zend_Pdf_Page              $page
+     * @param Mage_Sales_Model_Abstract $source
+     * @param Mage_Sales_Model_Order     $order
+     */
+    protected function insertAddressesAndHeader(Zend_Pdf_Page $page, Mage_Sales_Model_Abstract $source, Mage_Sales_Model_Order $order)
+    {
+        // Add logo
+        $this->insertLogo($page, $source->getStore());
+
+        // Add billing and shipping address
+        $this->y = 692 - $this->_marginTop;
+        $this->_insertCustomerAddress($page, $order);
+
+        // Add sender address
+        $this->y = 705 - $this->_marginTop;
+        $this->_insertSenderAddessBar($page);
+
+        // Add head
+        $this->y = 572 - $this->_marginTop;
+        $this->insertHeader($page, $order, $source);
+
+        /* Add table head */
+        // make sure that item table does not overlap heading
+        if ($this->y > 575 - $this->_marginTop) {
+            $this->y = 575 - $this->_marginTop;
+        }
+
+        $this->y = $this->y - 20;
+    }
+
+    /**
+     * Inserts the customer address. The default address is the billing address.
+     *
+     * @param  Zend_Pdf_Page          $page  Current page object of Zend_Pdf
+     * @param  Mage_Sales_Model_Order $order Order object
+     *
+     * @return void
+     */
+    protected function _insertCustomerAddress(&$page, $order)
+    {
+        //Insert billing address
+        $originY = $this->y;
+        $billing = $this->_formatAddress($order->getBillingAddress()->format('pdf'));
+        $this->_setFontBold($page, 8);
+        $page->drawText(Mage::helper('firegento_pdf')->__('Billing address'), $this->margin['left'], $this->y, $this->encoding);
+        $this->Ln(12);
+        $this->_setFontRegular($page, 8);
+        foreach ($billing as $line) {
+            $page->drawText(trim(strip_tags($line)), $this->margin['left'], $this->y, $this->encoding);
+            $this->Ln(11);
+        }
+
+        //Insert shipping address
+        $this->y = $originY;
+        $shipping = $this->_formatAddress($order->getShippingAddress()->format('pdf'));
+        $this->_setFontBold($page, 8);
+        $page->drawText(Mage::helper('firegento_pdf')->__('Shipping address'), $this->margin['left'] + 150, $this->y, $this->encoding);
+        $this->Ln(12);
+        $this->_setFontRegular($page, 8);
+        foreach ($shipping as $line) {
+            $page->drawText(trim(strip_tags($line)), $this->margin['left'] + 150, $this->y, $this->encoding);
+            $this->Ln(11);
+        }
+    }
 }
