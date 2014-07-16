@@ -863,20 +863,21 @@ abstract class FireGento_Pdf_Model_Engine_Abstract extends Mage_Sales_Model_Orde
         $this->_insertFooterBlock($page, $fields, 70, 40, 140);
 
         $fields = array(
-            'bank_name'          => Mage::helper('firegento_pdf')->__('Bank name:'),
-            'bank_account'       => Mage::helper('firegento_pdf')->__('Account:'),
-            'bank_code_number'   => Mage::helper('firegento_pdf')->__('Bank number:'),
-            'bank_account_owner' => Mage::helper('firegento_pdf')->__('Account owner:'),
-            'swift'              => Mage::helper('firegento_pdf')->__('SWIFT:'),
-            'iban'               => Mage::helper('firegento_pdf')->__('IBAN:')
+            'tax_number'          => Mage::helper('firegento_pdf')->__('Tax number:'),
+            'vat_id'              => Mage::helper('firegento_pdf')->__('VAT-ID:'),
+            'register_number'     => Mage::helper('firegento_pdf')->__('Register number:'),
+            'court'               => Mage::helper('firegento_pdf')->__('Court:'),
+            'ceo'                 => Mage::helper('firegento_pdf')->__('CEO:'),
         );
         $this->_insertFooterBlock($page, $fields, 215, 50, 150);
 
         $fields = array(
-            'tax_number'      => Mage::helper('firegento_pdf')->__('Tax number:'),
-            'vat_id'          => Mage::helper('firegento_pdf')->__('VAT-ID:'),
-            'register_number' => Mage::helper('firegento_pdf')->__('Register number:'),
-            'ceo'             => Mage::helper('firegento_pdf')->__('CEO:')
+            'bank_name'           => Mage::helper('firegento_pdf')->__('Bank name:'),
+            'bank_account'        => Mage::helper('firegento_pdf')->__('Account:'),
+            'bank_code_number'    => Mage::helper('firegento_pdf')->__('Bank number:'),
+            'bank_account_owner'  => Mage::helper('firegento_pdf')->__('Account owner:'),
+            'swift'               => Mage::helper('firegento_pdf')->__('SWIFT:'),
+            'iban'                => Mage::helper('firegento_pdf')->__('IBAN:')
         );
         $this->_insertFooterBlock($page, $fields, 355, 60, $this->margin['right'] - 365 - 10);
     }
@@ -907,7 +908,10 @@ abstract class FireGento_Pdf_Model_Engine_Abstract extends Mage_Sales_Model_Orde
                     continue;
                 }
                 // draw the label
-                $page->drawText($label, $this->margin['left'] + $colposition, $y, $this->encoding);
+                /**
+                 * Hide the label as it conflicts with the french logic/labels for some fields
+                 */
+                //$page->drawText($label, $this->margin['left'] + $colposition, $y, $this->encoding);
                 // prepare the value: wrap it if necessary
                 $val = $this->_imprint[$field];
                 $width = $colwidth;
